@@ -19,14 +19,22 @@
 
 // ### 代码起始
 // 初始化全局对象
-this.ent = {
-    util: {},
-    data: {
-        config: {
-            timeout: 500
+(function(global) {
+    global._ent = {
+        util: {},
+        data: {
+            config: {
+                timeout: 500
+            },
+            // 缓存全局的 _ent 对象，在本 js 执行之时，
+            // 它可能为 undefined，或者填有回调函数的数组，
+            // 我们会在末尾处理它，并置空，因此不会有循环引用的困扰，不致内存泄露。
+            // 但假如你需要 `for (p in global._ent.data) {}`
+            // 就需要各位小心。
+            queue: global._ent
         }
-    }
-};
+    };
+})(this);
 
 // ### util.getAsset
 //
@@ -96,7 +104,7 @@ this.ent = {
         }
     }
 
-    function scriptOnload(node, callback) {
+    var scriptOnload = util.scriptOnload = function(node, callback) {
 
         node.onload = node.onerror = node.onreadystatechange = function() {
 
@@ -172,7 +180,7 @@ this.ent = {
                     isLoaded = true;
                 }
             } catch (ex) {
-                // NS_ERROR_DOM_SECURITY_ERR
+                // NS\_ERROR\_DOM\_SECURITY\_ERR
                 if (ex.code === 1000) {
                     isLoaded = true;
                 }
@@ -190,17 +198,27 @@ this.ent = {
     }
 
 // References:
+//
 //  - http://unixpapa.com/js/dyna.html
 //  - ../test/research/load-js-css/test.html
 //  - ../test/issues/load-css/test.html
 //  - http://www.blaze.io/technical/ies-premature-execution-problem/
-})(this, ent.util, ent.data);
+})(this, _ent.util, _ent.data);
 
-// 基本的 define、seajs.use 逻辑
-// 因为不需要考虑异步的情况，代码量相差很多
+// ### define, seajs.use
+//
+// 实现基本的 define、seajs.use 逻辑。
+// 因为不需要考虑异步的情况，代码量相差很多。
 (function(global, util, data, undefined) {
 
     // ### mix
+    //
+    // 这个方法最早应该来自 kissy，`overwrite`、`whitelist` 等参数，
+    // 好像用的不多，暂且记着。另一种比较流行的使用场景是：
+    //
+    //     var result = mix({}, defaults, config);
+    //
+    // 可以很方便地拷贝 `defaults`，并将 `config` 覆盖上去。但本例不支持此场景。
     var _mix = util.mix = function(toObj, fromObj, overwrite, whitelist){
         if (!toObj || !fromObj) {
             return toObj;
@@ -273,11 +291,11 @@ this.ent = {
         return exports;
     })());
 
-    var _mods = ent.data.memoizedMods = {};
+    var _mods = data.memoizedMods = {};
 
-	// ### 记忆的模块的数据结构
-	// 
-	// dependencies 可能有模块会需要用到
+    // ### 记忆的模块的数据结构
+    // 
+    // dependencies 可能有模块会需要用到
     function Module(id, deps, factory) {
         this.id = id;
         this.dependencies = deps;
@@ -294,23 +312,25 @@ this.ent = {
         return mod.exports;
     }
 
-	// 用例：
-	//     define('mod_foo', function(require) {
-	//         require.load('http://taobao.com/ajax.js?jsonp=aloha', function() {});
-	//     });
+    // 用例：
+    //
+    //     define('mod_foo', function(require) {
+    //         require.load('http://taobao.com/ajax.js?jsonp=aloha', function() {});
+    //     });
     _require.load = function(uri, callback, charset) {
         util.getAsset(uri, callback, charset);
     };
 
-	// ent.js 中不支持异步加载模块
-	// 增加这个方法是为与创意中心里的代码逻辑保持一致，因为 `require.async`
-	// 可以实现这种使用方式：
-	//     define('cc/show', function(require) {
-	//         var templet = 'cc/templets/p4p/rank';
-	//
-	//         require.async(templet, function(mod_templet) {
-	//         });
-	//     });
+    // ent.js 中不支持异步加载模块
+    // 增加这个方法是为与创意中心里的代码逻辑保持一致，因为 `require.async`
+    // 可以实现这种使用方式：
+    //
+    //     define('cc/show', function(require) {
+    //         var templet = 'cc/templets/p4p/rank';
+    //
+    //         require.async(templet, function(mod_templet) {
+    //         });
+    //     });
     _require.async = function(uris, callback) {
         _load(uris, callback);
     };
@@ -319,12 +339,12 @@ this.ent = {
         if (util.iS(ids)) {
             ids = [ids];
         }
-		var args = [], i;
+        var args = [], i;
 
-		for (i = 0; i < ids.length; i++) {
-			args[i] = _require(ids[i]);
-		}
-		callback.apply(null, args);
+        for (i = 0; i < ids.length; i++) {
+            args[i] = _require(ids[i]);
+        }
+        callback.apply(null, args);
     }
 
     function _initExports(mod, context) {
@@ -333,9 +353,6 @@ this.ent = {
 
         mod.exports = {};
         delete mod.factory;
-		// 原代码中，`mod.ready` 用来标记模块的 js 是否加载完毕
-		// 在穷人版 sea.js 里，就不再需要用了。
-        //     delete mod.ready;
         
         if (util.iF(factory)) {
             ret = factory(_require, mod.exports, mod);
@@ -356,6 +373,7 @@ this.ent = {
         // 这里可以因此省去很多代码。因为应对的是 js 压缩、合并之后的情况，足够使用。
         //
         // deps 倒是可以为空，等价于传入空数组，[]，因此这种形式的模块声明是合法的：
+        //
         //     define('hello', {world: 'earth'});
         global.define = function(id, deps, factory) {
             if (util.iF(deps) || util.iPO(deps)) {
@@ -366,44 +384,86 @@ this.ent = {
 
             _mods[id] = mod;
         };
-		// 为了方便使用，支持两种使用方式：
-		//     seajs.use(['mod_a', 'mod_b'], function(modA, modB){});
-		//     seajs.use('http://a.tbcdn.cn/bundled_modules.js', function(){});
-        ent.use = function(ids, callback) {
-			if (util.iS(ids) && ids.indexOf('http://') === 0) {
-				util.getAsset(ids, callback);
-			}
-			else {
-				_load(ids, callback);
-			}
+        // 为了方便使用，支持两种使用方式：
+        //
+        //     seajs.use(['mod_a', 'mod_b'], function(modA, modB){});
+        //     seajs.use('http://a.tbcdn.cn/bundled_modules.js', function(){});
+        _ent.use = function(ids, callback) {
+            if (util.iS(ids) && ids.indexOf('http://') === 0) {
+                util.getAsset(ids, callback);
+            }
+            else {
+                _load(ids, callback);
+            }
         };
-        global.seajs = ent;
+        global.seajs = _ent;
     }
-})(this, ent.util, ent.data);
+})(this, _ent.util, _ent.data);
 
 // KSLITE 在加载完毕之后，会存放一份实体到 kslite 名下。
 // 创意中心里的老代码，以前都有习惯性的 require('kslite') 来用。
 // 非常趁手，因此，我们这里也提供一份。
 define('ent', function(require, exports) {
-    ent.util.mix(exports, ent.util, true, 'mix iF iA iS iPO getAsset map'.split(' '));
+
+    // 大部分方法 util 里头已经有了
+    _ent.util.mix(exports, _ent.util, true, 'mix iF iA iS iPO getAsset'.split(' '));
+
+    // 简易模板替换逻辑
+    //
+    //     .substitute("hello, {world}", {world: 'earth'}); // hello, earth
+    //
+    // 在 cc/datasource 中用到，可以用 cc/util/params 替换掉
+    exports.substitute = function(str, o, regexp, multiSubstitute){
+        if (!exports.iS(str) || !exports.iPO(o)) {
+            return str;
+        }
+        return str.replace(regexp || (/\\?\{([^{}]+)\}/g), function(match, name){
+            if (match.charAt(0) === '\\') {
+                return match.slice(1);
+            }
+            return (o[name] !== undefined) ? o[name] : (multiSubstitute ? match : "");
+        });
+    };
 });
 
-// 异步加载与 onload 事件注册
-// 应该有更好的方式吧？
-//     (function(global, util, data, undefined){
-//     	if (util.iA(global.entonload)) {
-//     		var i;
-//     
-//     		for (i = 0; i < entonload.length; i++) {
-//     			entonload[i]();	
-//     		}
-//     	}
-//     	global.entonload = {
-//     		push: function(fn) {
-//     			fn();
-//     		}
-//     	};
-//     })(this, ent.util, ent.data);
+// ### 异步加载
+// 
+// 使用方式：
+//
+//     var _ent = _ent || [];
+//     _ent.push(function() {});
+//
+// 注意点：如果是使用异步方式引入，必须给引入 ent.js 的 &lt;script&gt; 节点标记 
+// `script._ent = true`。
+(function(global, util, data) {
+    var scripts = document.getElementsByTagName('script'),
+        i, s, current;
 
+    for (i = 0; i < scripts.length; i++) {
+        s = scripts[i];
+        if (s._ent) {
+            current = s;
+            break;
+        }
+    }
+    current = current || scripts[scripts.length -1];
+    util.scriptOnload(current, function() {
+        var queue = data.queue,
+            i, fn;
+
+        if (util.iA(queue)) {
+            for (i = 0; i < queue.length; i++) {
+                fn = queue[i];
+                if (util.iF(fn)) {
+                    fn();
+                }
+            }
+        }
+        delete data.queue;
+        _ent.push = function(fn) {
+            fn();
+        };
+    });
+})(this, _ent.util, _ent.data);
 /* vim: softtabstop=4 tabstop=4 shiftwidth=4
  */
