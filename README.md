@@ -1,4 +1,4 @@
-### Ent.js
+## Ent.js
 
 Ent 是 **E**nt is **N**ot ksli**T**e 的缩写，糅合了玉伯 sea.js 
 与李牧的 kslite.js 功能。
@@ -11,11 +11,11 @@ Ent 是 **E**nt is **N**ot ksli**T**e 的缩写，糅合了玉伯 sea.js
  - seajs.config
  - require.async （ent.js 中有这个方法，但功能并非字面所示）
 
-#### 使用场景
+### 使用场景
 
 我自己的项目，创意中心，在用这个
 
-#### 浏览器兼容性
+### 浏览器兼容性
 
  - Chrome
  - Firefox
