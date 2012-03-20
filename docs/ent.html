@@ -5,7 +5,7 @@
 代码打包完毕之后，它的大部分功能都不再需要，尤其在广告投放等环境中，
 显得臃肿，因此有了 ent.js。</p>
 
-<p>ent.js 基于 玉伯&lt;<a href="&#x6D;&#97;i&#x6C;t&#x6F;:&#x6C;&#x69;&#x66;&#x65;&#115;&#105;&#x6E;&#103;&#101;&#x72;&#x40;&#103;&#109;&#97;&#105;&#x6C;&#46;&#x63;&#111;&#109;">&#x6C;&#x69;&#x66;&#x65;&#115;&#105;&#x6E;&#103;&#101;&#x72;&#x40;&#103;&#109;&#97;&#105;&#x6C;&#46;&#x63;&#111;&#109;</a>>、李牧&lt;<a href="&#109;&#97;&#105;&#x6C;t&#x6F;:&#108;&#x69;&#109;&#x75;&#64;&#116;&#97;&#x6F;&#x62;&#x61;&#111;&#x2E;&#x63;&#x6F;&#x6D;">&#108;&#x69;&#109;&#x75;&#64;&#116;&#97;&#x6F;&#x62;&#x61;&#111;&#x2E;&#x63;&#x6F;&#x6D;</a>> 的工作。
+<p>ent.js 基于 玉伯&lt;<a href="&#x6D;&#x61;i&#x6C;&#x74;&#x6F;:&#x6C;&#x69;&#102;&#x65;&#115;&#x69;&#x6E;&#103;&#x65;&#114;&#64;&#x67;&#x6D;&#97;&#x69;&#x6C;&#46;c&#x6F;&#109;">&#x6C;&#x69;&#102;&#x65;&#115;&#x69;&#x6E;&#103;&#x65;&#114;&#64;&#x67;&#x6D;&#97;&#x69;&#x6C;&#46;c&#x6F;&#109;</a>>、李牧&lt;<a href="&#x6D;&#x61;&#105;&#108;&#116;&#x6F;:&#x6C;&#x69;&#x6D;&#x75;&#64;&#116;&#x61;&#x6F;&#x62;&#97;&#x6F;&#x2E;&#x63;&#x6F;&#109;">&#x6C;&#x69;&#x6D;&#x75;&#64;&#116;&#x61;&#x6F;&#x62;&#97;&#x6F;&#x2E;&#x63;&#x6F;&#109;</a>> 的工作。
 它的名字是 <strong>E</strong>nt is <strong>N</strong>ot ksli<strong>T</strong>e 的缩写，向李牧的 KSLITE 致敬。</p>
 
 <p>KSLITE 为 <a href="http://chuangyi.taobao.com">创意中心</a> 初期提供了足够的功能支持，
@@ -114,7 +114,7 @@ to hold current node, for deriving url in <code>define</code>.</p>             <
             <span class="p">}</span>
         <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>NOTICE:
 Nothing will happen in Opera when the file status is 404. In this case,
-the callback will be called when time is out.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="p">}</span>
+the callback will be called when time is out.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="p">};</span>
 
     <span class="kd">function</span> <span class="nx">styleOnload</span><span class="p">(</span><span class="nx">node</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>for IE6-9 and Opera</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">if</span> <span class="p">(</span><span class="nx">node</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">)</span> <span class="p">{</span>
             <span class="nx">node</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">(</span><span class="s1">&#39;onload&#39;</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>NOTICE:
@@ -362,17 +362,13 @@ _ent.push(function() {});
 
 <p>注意点：如果是使用异步方式引入，必须给引入 ent.js 的 &lt;script&gt; 节点标记 
 <code>script._ent = true</code>。</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">global</span><span class="p">,</span> <span class="nx">util</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">scripts</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;script&#39;</span><span class="p">),</span>
-        <span class="nx">i</span><span class="p">,</span> <span class="nx">s</span><span class="p">,</span> <span class="nx">current</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">current</span> <span class="o">=</span> <span class="nx">getCurrentScript</span><span class="p">(),</span>
+        <span class="nx">originOnload</span><span class="p">;</span>
 
-    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">scripts</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">s</span> <span class="o">=</span> <span class="nx">scripts</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">_ent</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">current</span> <span class="o">=</span> <span class="nx">s</span><span class="p">;</span>
-            <span class="k">break</span><span class="p">;</span>
-        <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
     <span class="p">}</span>
-    <span class="nx">current</span> <span class="o">=</span> <span class="nx">current</span> <span class="o">||</span> <span class="nx">scripts</span><span class="p">[</span><span class="nx">scripts</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+    <span class="nx">originOnload</span> <span class="o">=</span> <span class="nx">current</span><span class="p">.</span><span class="nx">onload</span><span class="p">;</span>
     <span class="nx">util</span><span class="p">.</span><span class="nx">scriptOnload</span><span class="p">(</span><span class="nx">current</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">queue</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">queue</span><span class="p">,</span>
             <span class="nx">i</span><span class="p">,</span> <span class="nx">fn</span><span class="p">;</span>
@@ -389,7 +385,26 @@ _ent.push(function() {});
         <span class="nx">_ent</span><span class="p">.</span><span class="nx">push</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
             <span class="nx">fn</span><span class="p">();</span>
         <span class="p">};</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nx">iF</span><span class="p">(</span><span class="nx">originOnload</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nx">originOnload</span><span class="p">();</span>
+        <span class="p">}</span>
     <span class="p">});</span>
+    <span class="kd">function</span> <span class="nx">getCurrentScript</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">seajs</span><span class="p">.</span><span class="nx">pluginSDK</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">seajs</span><span class="p">.</span><span class="nx">pluginSDK</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">getCurrentScript</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="kd">var</span> <span class="nx">scripts</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;script&#39;</span><span class="p">),</span>
+            <span class="nx">i</span><span class="p">,</span> <span class="nx">s</span><span class="p">,</span> <span class="nx">current</span><span class="p">;</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">scripts</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">s</span> <span class="o">=</span> <span class="nx">scripts</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">_ent</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">current</span> <span class="o">=</span> <span class="nx">s</span><span class="p">;</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">current</span> <span class="o">||</span> <span class="nx">scripts</span><span class="p">[</span><span class="nx">scripts</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+    <span class="p">}</span>
 <span class="p">})(</span><span class="k">this</span><span class="p">,</span> <span class="nx">_ent</span><span class="p">.</span><span class="nx">util</span><span class="p">,</span> <span class="nx">_ent</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
 <span class="cm">/* vim: softtabstop=4 tabstop=4 shiftwidth=4</span>
 <span class="cm"> */</span>

@@ -109,7 +109,6 @@
         node.onload = node.onerror = node.onreadystatechange = function() {
 
             if (/loaded|complete|undefined/.test(node.readyState)) {
-
                 // Ensure only run once
                 node.onload = node.onerror = node.onreadystatechange = null;
 
@@ -124,11 +123,9 @@
                         }
                     } catch (x) {
                     }
-
                     // Remove the script
                     head.removeChild(node);
                 }
-
                 // Dereference the node
                 node = undefined;
 
@@ -139,7 +136,7 @@
         // NOTICE:
         // Nothing will happen in Opera when the file status is 404. In this case,
         // the callback will be called when time is out.
-    }
+    };
 
     function styleOnload(node, callback) {
 
@@ -436,17 +433,13 @@ define('ent', function(require, exports) {
 // 注意点：如果是使用异步方式引入，必须给引入 ent.js 的 &lt;script&gt; 节点标记 
 // `script._ent = true`。
 (function(global, util, data) {
-    var scripts = document.getElementsByTagName('script'),
-        i, s, current;
+    var current = getCurrentScript(),
+        originOnload;
 
-    for (i = 0; i < scripts.length; i++) {
-        s = scripts[i];
-        if (s._ent) {
-            current = s;
-            break;
-        }
+    if (!current) {
+        return;
     }
-    current = current || scripts[scripts.length -1];
+    originOnload = current.onload;
     util.scriptOnload(current, function() {
         var queue = data.queue,
             i, fn;
@@ -463,7 +456,26 @@ define('ent', function(require, exports) {
         _ent.push = function(fn) {
             fn();
         };
+        if (util.iF(originOnload)) {
+            originOnload();
+        }
     });
+    function getCurrentScript() {
+        if (seajs.pluginSDK) {
+            return seajs.pluginSDK.util.getCurrentScript();
+        }
+        var scripts = document.getElementsByTagName('script'),
+            i, s, current;
+
+        for (i = 0; i < scripts.length; i++) {
+            s = scripts[i];
+            if (s._ent) {
+                current = s;
+                break;
+            }
+        }
+        return current || scripts[scripts.length -1];
+    }
 })(this, _ent.util, _ent.data);
 /* vim: softtabstop=4 tabstop=4 shiftwidth=4
  */
