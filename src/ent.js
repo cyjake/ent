@@ -123,8 +123,8 @@
                         }
                     } catch (x) {
                     }
-                    // Remove the script
-                    head.removeChild(node);
+                    // 这里的问题比较多，不删除节点了
+                    // head.removeChild(node);
                 }
                 // Dereference the node
                 node = undefined;
