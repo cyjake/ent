@@ -115,9 +115,9 @@
                 node.onload = node.onerror = node.onreadystatechange = null
 
                 // Remove the script to reduce memory leak
-                if (node.parentNode && !config.debug) {
-                    head.removeChild(node)
-                }
+                // if (node.parentNode && !config.debug) {
+                //     head.removeChild(node)
+                // }
 
                 // Dereference the node
                 node = undefined
