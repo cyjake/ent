@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <title>Ent.js <%= @title %> 测试</title>
+  <link rel="stylesheet" href="/qunit.css" type="text/css"/>
+  <% if @name == 'seajs' %>
+    <script type="text/javascript" src="/sea.js"></script>
+  <% end %>
+  <script type="text/javascript" src="/src/ent.js"></script>
+  <script type="text/javascript" src="/qunit.js"></script>
+  <script type="text/javascript" src="/test/<%= @name %>.js"></script>
+</head>
+<body>
+  <h1 id="qunit-header">Ent.js <%= @title %> 测试</h1>
+  <h2 id="qunit-banner"></h2>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests">
+  </ol>
+</body>
+</html>
