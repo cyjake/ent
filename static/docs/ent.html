@@ -5,7 +5,7 @@
 代码打包完毕之后，它的大部分功能都不再需要，尤其在广告投放等环境中，
 显得臃肿，因此有了 ent.js。</p>
 
-<p>ent.js 基于 玉伯&lt;<a href="&#x6D;&#x61;&#x69;&#x6C;&#116;o:&#108;&#105;&#x66;&#101;&#x73;&#105;&#x6E;&#x67;&#x65;&#x72;&#64;&#103;&#109;&#x61;&#x69;&#108;&#46;&#x63;&#111;&#109;">&#108;&#105;&#x66;&#101;&#x73;&#105;&#x6E;&#x67;&#x65;&#x72;&#64;&#103;&#109;&#x61;&#x69;&#108;&#46;&#x63;&#111;&#109;</a>>、李牧&lt;<a href="&#109;&#97;i&#108;&#116;&#111;:&#x6C;&#105;&#109;&#117;&#x40;&#116;&#97;&#x6F;&#x62;a&#x6F;&#x2E;&#x63;&#111;&#x6D;">&#x6C;&#105;&#109;&#117;&#x40;&#116;&#97;&#x6F;&#x62;a&#x6F;&#x2E;&#x63;&#111;&#x6D;</a>> 的工作。
+<p>ent.js 基于 玉伯&lt;<a href="&#109;&#x61;&#105;&#108;&#x74;&#x6F;:&#x6C;&#x69;&#x66;&#101;&#x73;&#105;&#x6E;&#103;&#x65;&#114;&#64;&#103;&#109;&#97;i&#x6C;&#x2E;&#x63;&#x6F;m">&#x6C;&#x69;&#x66;&#101;&#x73;&#105;&#x6E;&#103;&#x65;&#114;&#64;&#103;&#109;&#97;i&#x6C;&#x2E;&#x63;&#x6F;m</a>>、李牧&lt;<a href="&#x6D;&#97;&#x69;&#x6C;t&#x6F;:&#x6C;&#x69;&#x6D;&#117;&#64;t&#x61;&#111;&#x62;&#97;&#x6F;&#46;&#99;&#x6F;&#109;">&#x6C;&#x69;&#x6D;&#117;&#64;t&#x61;&#111;&#x62;&#97;&#x6F;&#46;&#99;&#x6F;&#109;</a>> 的工作。
 它的名字是 <strong>E</strong>nt is <strong>N</strong>ot ksli<strong>T</strong>e 的缩写，向李牧的 KSLITE 致敬。</p>
 
 <p>KSLITE 为 <a href="http://chuangyi.taobao.com">创意中心</a> 初期提供了足够的功能支持，
@@ -473,7 +473,7 @@ _ent.push(function() {})
 </code></pre>
 
 <p>注意点：如果是使用异步方式引入，必须给引入 ent.js 的 &lt;script&gt; 节点标记
-<code>script.id = 'j-entjs'</code>。</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">;(</span><span class="kd">function</span><span class="p">(</span><span class="nx">global</span><span class="p">,</span> <span class="nx">util</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+<code>script._ent = true</code>。</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">;(</span><span class="kd">function</span><span class="p">(</span><span class="nx">global</span><span class="p">,</span> <span class="nx">util</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">current</span> <span class="o">=</span> <span class="nx">getCurrentScript</span><span class="p">(),</span>
         <span class="nx">originOnload</span>
 
@@ -503,10 +503,18 @@ _ent.push(function() {})
     <span class="p">})</span>
     <span class="kd">function</span> <span class="nx">getCurrentScript</span><span class="p">()</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">doc</span> <span class="o">=</span> <span class="nx">global</span><span class="p">.</span><span class="nb">document</span><span class="p">,</span>
-            <span class="nx">current</span> <span class="o">=</span> <span class="nx">util</span><span class="p">.</span><span class="nx">getCurrentScript</span><span class="p">()</span>
+            <span class="nx">current</span> <span class="o">=</span> <span class="nx">util</span><span class="p">.</span><span class="nx">getCurrentScript</span><span class="p">(),</span>
+            <span class="nx">i</span><span class="p">,</span> <span class="nx">len</span><span class="p">,</span> <span class="nx">s</span><span class="p">,</span> <span class="nx">scripts</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">current</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;j-entjs&#39;</span><span class="p">)</span>
+            <span class="nx">scripts</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;script&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">scripts</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">s</span> <span class="o">=</span> <span class="nx">scripts</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">_ent</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">current</span> <span class="o">=</span> <span class="nx">s</span>
+                    <span class="k">break</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
         <span class="p">}</span>
 
         <span class="k">return</span> <span class="nx">current</span>
