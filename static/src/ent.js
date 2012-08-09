@@ -572,7 +572,7 @@
 //     _ent.push(function() {})
 //
 // 注意点：如果是使用异步方式引入，必须给引入 ent.js 的 &lt;script&gt; 节点标记
-// `script.id = 'j-entjs'`。
+// `script._ent = true`。
 ;(function(global, util, data) {
     var current = getCurrentScript(),
         originOnload
@@ -603,10 +603,18 @@
     })
     function getCurrentScript() {
         var doc = global.document,
-            current = util.getCurrentScript()
+            current = util.getCurrentScript(),
+            i, len, s, scripts
 
         if (!current) {
-            current = doc.getElementById('j-entjs')
+            scripts = doc.getElementsByTagName('script')
+            for (i = 0, len = scripts.length; i < len; i++) {
+                s = scripts[i]
+                if (s._ent) {
+                    current = s
+                    break
+                }
+            }
         }
 
         return current
