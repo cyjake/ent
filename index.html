@@ -50,7 +50,7 @@
 在开发期很有用，配置项、模块名判定等，都非常方便。但在生产环境，
 代码打包完毕之后，它的大部分功能都不再需要，尤其在广告投放等环境中，
 显得臃肿，因此有了 ent.js。</p>
-<p>ent.js 基于 玉伯<a href="&#109;&#97;&#x69;&#108;&#116;&#x6f;&#58;&#60;&#x6c;&#x69;&#102;&#101;&#115;&#105;&#110;&#x67;&#x65;&#x72;&#64;&#x67;&#x6d;&#x61;&#x69;&#108;&#x2e;&#x63;&#111;&#x6d;">&#60;&#x6c;&#x69;&#102;&#101;&#115;&#105;&#110;&#x67;&#x65;&#x72;&#64;&#x67;&#x6d;&#x61;&#x69;&#108;&#x2e;&#x63;&#111;&#x6d;</a>&gt;、李牧<a href="&#109;&#97;&#x69;&#108;&#116;&#111;&#x3a;&#60;&#108;&#105;&#109;&#117;&#x40;&#116;&#97;&#x6f;&#x62;&#97;&#111;&#46;&#x63;&#x6f;&#x6d;">&#60;&#108;&#105;&#109;&#117;&#x40;&#116;&#97;&#x6f;&#x62;&#97;&#111;&#46;&#x63;&#x6f;&#x6d;</a>&gt; 的工作。
+<p>ent.js 基于 玉伯<a href="&#x6d;&#97;&#105;&#x6c;&#x74;&#111;&#58;&#x3c;&#108;&#105;&#102;&#x65;&#x73;&#105;&#110;&#x67;&#x65;&#114;&#x40;&#x67;&#x6d;&#97;&#105;&#x6c;&#46;&#x63;&#111;&#109;">&#x3c;&#108;&#105;&#102;&#x65;&#x73;&#105;&#110;&#x67;&#x65;&#114;&#x40;&#x67;&#x6d;&#97;&#105;&#x6c;&#46;&#x63;&#111;&#109;</a>&gt;、李牧<a href="&#x6d;&#97;&#105;&#108;&#x74;&#111;&#58;&#x3c;&#x6c;&#x69;&#x6d;&#x75;&#x40;&#x74;&#x61;&#x6f;&#x62;&#97;&#x6f;&#46;&#x63;&#x6f;&#x6d;">&#x3c;&#x6c;&#x69;&#x6d;&#x75;&#x40;&#x74;&#x61;&#x6f;&#x62;&#97;&#x6f;&#46;&#x63;&#x6f;&#x6d;</a>&gt; 的工作。
 它的名字是 <strong>E</strong>nt is <strong>N</strong>ot ksli<strong>T</strong>e 的缩写，向李牧的 KSLITE 致敬。</p>
 <p>KSLITE 为 <a href="http://chuangyi.taobao.com">创意中心</a> 初期提供了足够的功能支持，
 扮演了底层架构基石的角色，举足轻重。</p>
@@ -947,8 +947,8 @@ util.mix(Module.prototype, {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-34">&#182;</a>
               </div>
-              <p>如果页面环境中已经有了 sea.js，则使用 sea.js 的版本，不重载方法。
-ent.js 退回到工具包的角色，以 <code>require(&#39;ent&#39;)</code> 提供给大家使用</p>
+              <p>如果页面环境中已经有了 sea.js，ent.js 退回到工具包的角色，以 <code>require(&#39;ent&#39;)</code>
+提供给大家使用。</p>
 <p>正确 define 方式：<code>define(id, deps, factory)</code>
 与 sea.js 不同的是，不容许 id 不传，也不会根据地址猜测模块 id。
 这里可以因此省去很多代码。因为应对的是 js 压缩、合并之后的情况，足够使用。</p>
@@ -1063,7 +1063,7 @@ define(<span class="string">'ent'</span>, [], factory)</pre></div></div>
 <p>使用方式：</p>
 <pre><code>var _ent = _ent || []
 _ent.push(function() {})</code></pre>
-<p>注意点：如果是使用异步方式引入，必须给引入 ent.js 的 &lt;script&gt; 节点标记
+<p>注意点：如果是使用异步方式引入，必须给引入 ent.js 的 script 节点标记
 <code>script._ent = true</code>。</p>
 <p>如果运行时并不是浏览器，则不做 onload 之类的事情。</p>
 
@@ -1074,16 +1074,47 @@ _ent.push(function() {})</code></pre>
     <span class="keyword">return</span>
 }
 
-<span class="keyword">var</span> current = getCurrentScript()
+<span class="keyword">var</span> current = getCurrentScript()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>如果找不到当前脚本，在如下情况下找不到当前脚本：</p>
+<ul>
+<li>被 Sea.js 等模块加载器异步加载</li>
+<li>代码被内联到 script 标签中</li>
+</ul>
+<p>其余情况，在 getCurrentScript 辅助方法中处理。</p>
 
-<span class="keyword">if</span> (!current) {
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="keyword">if</span> (!current) {
     global.define = ent.defineWas
     <span class="keyword">return</span>
 }
 
-<span class="keyword">var</span> originOnload = current.onload
+<span class="keyword">var</span> originOnload = current.onload</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>得到当前节点的话，在当前脚本执行完毕之后再恢复全局的 define 。</p>
 
-util.scriptOnload(current, <span class="keyword">function</span>() {
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>util.scriptOnload(current, <span class="keyword">function</span>() {
 
     global.define = ent.defineWas
 
@@ -1109,13 +1140,44 @@ util.scriptOnload(current, <span class="keyword">function</span>() {
     <span class="keyword">var</span> current = util.getCurrentScript()
     <span class="keyword">var</span> len
     <span class="keyword">var</span> scripts
-    <span class="keyword">var</span> i, s
+    <span class="keyword">var</span> i, s</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p>如果使用 util.getCurrentScript 找不到当前节点，再试试其他方式
+找不到的原因可能是 ent 是被其他模块加载器加载的。</p>
 
-    <span class="keyword">if</span> (!current) {
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> (!current) {
         scripts = doc.getElementsByTagName(<span class="string">'script'</span>)
-        len = scripts.length
+        len = scripts.length</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <p>遍历所有 script 标签，如果：</p>
+<ul>
+<li>_ent 属性设为 true，</li>
+<li>有 ent 自定义属性，不为空</li>
+</ul>
 
-        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len; i++) {
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len; i++) {
             s = scripts[i]
             <span class="keyword">if</span> (s._ent || s.getAttribute(<span class="string">'ent'</span>)) {
                 current = s
@@ -1127,14 +1189,15 @@ util.scriptOnload(current, <span class="keyword">function</span>() {
         </li>
         
         
-        <li id="section-40">
+        <li id="section-44">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-40">&#182;</a>
+                <a class="pilcrow" href="#section-44">&#182;</a>
               </div>
-              <p>statically loaded, via <script> tag.
-s = scripts[len - 1]</p>
+              <p>如果还是找不到，看看最后一个加载的 script 标签，是否匹配 TFS CDN ，如果是，
+则认为是当前 JS 所在节点。</p>
+<p>s = scripts[len - 1]</p>
 
             </div>
             
