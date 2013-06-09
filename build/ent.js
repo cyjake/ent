@@ -543,8 +543,8 @@ util.mix(Module.prototype, {
 
 var gModule = new Module(util.pageUri)
 
-// 如果页面环境中已经有了 sea.js，则使用 sea.js 的版本，不重载方法。
-// ent.js 退回到工具包的角色，以 `require('ent')` 提供给大家使用
+// 如果页面环境中已经有了 sea.js，ent.js 退回到工具包的角色，以 `require('ent')`
+// 提供给大家使用。
 
 // 正确 define 方式：`define(id, deps, factory)`
 // 与 sea.js 不同的是，不容许 id 不传，也不会根据地址猜测模块 id。
@@ -553,6 +553,7 @@ var gModule = new Module(util.pageUri)
 // deps 倒是可以为空，等价于传入空数组，[]，因此这种形式的模块声明是合法的：
 //
 //     define('hello', {world: 'earth'})
+//
 global.define = ent.define = function(id, deps, factory) {
     if (util.iF(deps) || util.iPO(deps)) {
         factory = deps
@@ -608,7 +609,7 @@ define('ent', [], factory)
 //     var _ent = _ent || []
 //     _ent.push(function() {})
 //
-// 注意点：如果是使用异步方式引入，必须给引入 ent.js 的 &lt;script&gt; 节点标记
+// 注意点：如果是使用异步方式引入，必须给引入 ent.js 的 script 节点标记
 // `script._ent = true`。
 
 // 如果运行时并不是浏览器，则不做 onload 之类的事情。
@@ -619,6 +620,12 @@ if (!global.document) {
 
 var current = getCurrentScript()
 
+// 如果找不到当前脚本，在如下情况下找不到当前脚本：
+//
+// - 被 Sea.js 等模块加载器异步加载
+// - 代码被内联到 script 标签中
+//
+// 其余情况，在 getCurrentScript 辅助方法中处理。
 if (!current) {
     global.define = ent.defineWas
     return
@@ -626,6 +633,7 @@ if (!current) {
 
 var originOnload = current.onload
 
+// 得到当前节点的话，在当前脚本执行完毕之后再恢复全局的 define 。
 util.scriptOnload(current, function() {
 
     global.define = ent.defineWas
@@ -654,10 +662,17 @@ function getCurrentScript() {
     var scripts
     var i, s
 
+    // 如果使用 util.getCurrentScript 找不到当前节点，再试试其他方式
+    // 找不到的原因可能是 ent 是被其他模块加载器加载的。
     if (!current) {
         scripts = doc.getElementsByTagName('script')
         len = scripts.length
 
+        // 遍历所有 script 标签，如果：
+        //
+        // - _ent 属性设为 true，
+        // - 有 ent 自定义属性，不为空
+        //
         for (i = 0; i < len; i++) {
             s = scripts[i]
             if (s._ent || s.getAttribute('ent')) {
@@ -667,7 +682,9 @@ function getCurrentScript() {
         }
     }
 
-    // statically loaded, via <script> tag.
+    // 如果还是找不到，看看最后一个加载的 script 标签，是否匹配 TFS CDN ，如果是，
+    // 则认为是当前 JS 所在节点。
+    //
     // s = scripts[len - 1]
     if (!current && /T[^\/]+\.js$/.test(s.src)) current = s
 

@@ -5,7 +5,7 @@
 //     var _ent = _ent || []
 //     _ent.push(function() {})
 //
-// 注意点：如果是使用异步方式引入，必须给引入 ent.js 的 <script> 节点标记
+// 注意点：如果是使用异步方式引入，必须给引入 ent.js 的 script 节点标记
 // `script._ent = true`。
 
 // 如果运行时并不是浏览器，则不做 onload 之类的事情。
@@ -19,7 +19,7 @@ var current = getCurrentScript()
 // 如果找不到当前脚本，在如下情况下找不到当前脚本：
 //
 // - 被 Sea.js 等模块加载器异步加载
-// - 代码被内联到 <script> 标签中
+// - 代码被内联到 script 标签中
 //
 // 其余情况，在 getCurrentScript 辅助方法中处理。
 if (!current) {
