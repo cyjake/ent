@@ -1,3 +1,5 @@
+define = _ent.define
+
 define('browser/console', [], function(require, exports, module) {
     if (window.console) {
         module.exports = console
@@ -12,6 +14,7 @@ define('browser/console', [], function(require, exports, module) {
         out.value += '\n' + msg
     }
 })
+
 define('japanese', ['browser/console'], function(require, exports) {
     var out = require('browser/console')
 
@@ -19,19 +22,22 @@ define('japanese', ['browser/console'], function(require, exports) {
         out.log('konizuwa ' + name)
     }
 })
+
 module('ent.js itself')
+
 test('basic module definition', function() {
-	var mods = seajs.data.memoizedMods
+	var mods = _ent.cache
 
 	ok(mods['browser/console'], "定义 browser/console 模块")
-	ok(mods['japanese'], "定义 japanses 模块")
+	ok(mods.japanese, "定义 japanses 模块")
 })
-seajs.use(['japanese'], function(jp) {
+
+_ent.use(['japanese'], function(jp) {
 	test('module exports initialization', function() {
-		var mods = seajs.data.memoizedMods
+		var mods = _ent.cache
 
 		ok(mods['browser/console'].exports, 'browser/console exports 初始化完毕')
-		ok(mods['japanese'].exports, 'japanese 初始化完毕')
+		ok(mods.japanese.exports, 'japanese 初始化完毕')
 	})
 })
 /* vim: softtabstop=4 tabstop=4 shiftwidth=4
