@@ -57,6 +57,7 @@ function getCurrentScript() {
     var len
     var scripts
     var i, s
+    var tfsPtn = /tfscom\/T[^\/]+\.js$/
 
     // 如果使用 util.getCurrentScript 找不到当前节点，再试试其他方式
     // 找不到的原因可能是 ent 是被其他模块加载器加载的。
@@ -78,11 +79,15 @@ function getCurrentScript() {
         }
     }
 
-    // 如果还是找不到，看看最后一个加载的 script 标签，是否匹配 TFS CDN ，如果是，
-    // 则认为是当前 JS 所在节点。
+    // 如果还是找不到，看看最后一个加载的 script 标签，静态加载时，最后一个 script 即当前
+    // script 。拿到后，检查是否匹配 TFS CDN ，如果是，则认为是当前 JS 所在节点。
     //
     // s = scripts[len - 1]
-    if (!current && /T[^\/]+\.js$/.test(s.src)) current = s
+    if (!current && tfsPtn.test(s.src)) current = s
+
+    // 或者看看首个 script 标签，使用 KISSY.getScript 等方式异步加载时，会是首个节点。
+    s = scripts[0]
+    if (!current && tfsPtn.test(s.src)) current = s
 
     return current
 }
