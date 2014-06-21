@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Ent</title>
+  <link rel="stylesheet" href="./mocha.css" type="text/css"/>
+  <script src="../src/ent.js"></script>
+</head>
+<body>
+  <div id="mocha"></div>
+  <script src="./expect.js"></script>
+  <script src="./mocha.js"></script>
+  <script>mocha.setup('bdd')</script>
+  <script src="./test.ent.js"></script>
+  <script>
+    mocha.checkLeaks();
+    mocha.globals(['_ent']);
+    mocha.run();
+  </script>
+</body>
+</html>

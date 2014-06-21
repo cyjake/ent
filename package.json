@@ -1,17 +1,16 @@
 {
   "name": "ent",
-  "description": "Static Module Loader",
-  "version": "0.1.0",
+  "description": "A static module loader",
+  "version": "0.2.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:dotnil/ent.git"
+  },
   "author": "Jake Chen <jakeplus@gmail.com>",
   "scripts": {
-    "start": "grunt connect:server:keepalive",
-    "test": "grunt test --verbose"
+  	"test": "totoro"
   },
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-qunit": "~0.2.2",
-    "grunt-contrib-connect": "~0.3.0",
-    "grunt-contrib-jshint": "~0.6.0",
-    "grunt-contrib-concat": "~0.3.0"
+    "totoro": "^1.0.1"
   }
 }

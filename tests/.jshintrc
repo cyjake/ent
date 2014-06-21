@@ -1,0 +1,15 @@
+{
+  "browser": true,
+  "strict": false,
+  "asi": true,
+
+  "globals": {
+    "_ent": false,
+    
+    "describe": false,
+    "it": false,
+    "before": false,
+    "after": false,
+    "expect": false
+  }
+}

@@ -1,3 +1,6 @@
 {
-    "asi": true
+  "strict": false,
+  "browser": true,
+  "asi": true,
+  "quotmark": "single"
 }
